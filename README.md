@@ -8,7 +8,7 @@ https://user-images.githubusercontent.com/77539943/218476418-5a68047d-ea54-4d46-
 
 
 # Built with
-SwiftUI
+- SwiftUI
 
 
 # Third parties
