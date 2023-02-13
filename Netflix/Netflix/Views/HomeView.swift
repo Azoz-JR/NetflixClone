@@ -170,9 +170,6 @@ struct HomeView: View {
             .sheet(isPresented: $showingDetailView, content: {
                 MovieTrailerView(movie: selectedMovie)
             })
-            .navigationDestination(isPresented: $showingDetailView) {
-                MovieTrailerView(movie: selectedMovie)
-            }
         }
     }
 }
