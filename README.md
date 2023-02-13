@@ -1,6 +1,6 @@
 # NetflixClone
 
-NetflixClone is an application to watch trailers of films and TV shows both old and new.
+NetflixClone is an iOS application to watch trailers of films and TV shows both old and new.
 
 
 
