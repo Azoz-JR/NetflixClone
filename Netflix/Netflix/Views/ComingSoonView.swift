@@ -16,27 +16,7 @@ struct ComingSoonView: View {
         NavigationView {
             GeometryReader { geo in
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 0) {
-                        ForEach(viewModel.upcomingMovies) { movie in
-                            NavigationLink {
-                                MovieTrailerView(movie: movie)
-                            } label: {
-                                if let url = movie.posterURL {
-                                    HStack {
-                                        WebImage(url: url)
-                                            .resizable()
-                                            .frame(width: 100, height: 150)
-                                            .padding(.horizontal)
-                                        
-                                        Text(movie.wrappedTitle)
-                                            .font(.title2.bold())
-                                    }
-                                    .padding(.horizontal, 5)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                }
-                            }
-                        }
-                    }
+                    StackView(shows: viewModel.upcomingMovies)
                 }
             }
             .navigationTitle("Coming Soon")

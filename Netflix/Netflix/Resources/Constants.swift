@@ -13,6 +13,14 @@ struct Constants {
     static let imageBaseURL = "https://image.tmdb.org/t/p/w500"
     static let youtubeAPIKey = "AIzaSyAqELjyq0-gLwVH3atr9Sp2G14P8PDtWOY"
     static let youtubeBaseURL = "https://youtube.googleapis.com/youtube/v3/search?"
+    static let trendingMoviesURL = "\(baseURL)/3/trending/movie/day?api_key=\(APIKey)"
+    static let upcomingMoviesURL = "\(baseURL)/3/movie/upcoming?api_key=\(APIKey)&language=en-US&page=1"
+    static let popularMoviesURL = "\(baseURL)/3/movie/popular?api_key=\(APIKey)&language=en-US&page=1"
+    static let topRatedMoviesURL = "\(baseURL)/3/movie/top_rated?api_key=\(APIKey)&language=en-US&page=1"
+    static let trendingTVsURL = "\(baseURL)/3/trending/tv/day?api_key=\(APIKey)"
+    static let topRatedTVsURL = "\(baseURL)/3/tv/top_rated?api_key=\(APIKey)&language=en-US&page=1"
+    static let searchMoviesURL = "\(baseURL)/3/search/movie?api_key=\(APIKey)&query="
+    static let searchTVsURL = "\(Constants.baseURL)/3/search/tv?api_key=\(Constants.APIKey)&query="
 }
 
 
@@ -20,7 +28,7 @@ enum TitleType {
     case trendingMovies, trendingTVs, popularMovies, upcomingMovies, topRatedMovies, topRatedTVs
 }
 
-enum ShowType: String {
+enum ShowType: String, Codable {
     case movies = "Movies"
     case TVs = "TVs"
 }

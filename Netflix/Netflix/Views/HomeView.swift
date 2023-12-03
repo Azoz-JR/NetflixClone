@@ -18,7 +18,7 @@ struct HomeView: View {
     @State private var mainPosterIndex = 0
     @State private var fadeOut = false
     @State private var mainImage = Image(uiImage: UIImage())
-    @State private var selectedMovie = Movie.example
+    @State private var selectedShow = ItemViewModel.example
     @State private var isActive = true
     @State private var showingDetailView = false
     
@@ -28,29 +28,12 @@ struct HomeView: View {
         NavigationView {
             ScrollView {
                 VStack(alignment: .leading) {
-                    HStack(spacing: 30) {
-                        Image("logo")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 44, height: 44)
-                        
-                        Spacer()
-                        
-                        Button {
-                            
-                        } label: {
-                            Image(systemName: "play.square")
-                                .font(.title)
-                        }
-                        
-                        Button {
-                            
-                        }label: {
-                            Image(systemName: "person")
-                                .font(.title)
-                        }
-                    }
-                    .padding(.horizontal)
+                    Image("logo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 44, height: 44)
+                        .padding(.leading)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     
                     ZStack(alignment: .bottom) {
                         if !viewModel.trendingMovies.isEmpty {
@@ -74,15 +57,13 @@ struct HomeView: View {
                                 }
                                 
                                 Button {
-                                    if viewModel.downloadedMovies.contains(where: {$0 == selectedMovie}) {
-                                        if let index = viewModel.downloadedMovies.firstIndex(where: { $0 == selectedMovie }) {
-                                            viewModel.removeMovie(at: index)
-                                        }
+                                    if viewModel.isShowDownloaded(item: selectedShow) {
+                                        viewModel.deleteShow(item: selectedShow)
                                     } else {
-                                        viewModel.downloadMovie(movie: selectedMovie)
+                                        viewModel.downloadShow(item: selectedShow)
                                     }
                                 } label: {
-                                    Text(viewModel.downloadedMovies.contains(where: {$0 == selectedMovie}) ? "Remove" : "Download")
+                                    Text(viewModel.isShowDownloaded(item: selectedShow) ? "Remove" : "Download")
                                         .font(.title3)
                                         .frame(width: 140, height: 40)
                                         .background(Rectangle().fill(.black.opacity(0.6)))
@@ -100,17 +81,17 @@ struct HomeView: View {
                         
                     }
                     
-                    HorizontalListView(listTitle: "Trending Movies", movies: viewModel.trendingMovies, type: .trendingMovies)
+                    HorizontalListView(listTitle: "Trending Movies", items: viewModel.trendingMovies, type: .movies)
                     
-                    HorizontalListView(listTitle: "Trending TVs", Tvs: viewModel.trendingTvs, type: .trendingTVs)
+                    HorizontalListView(listTitle: "Trending TVs", items: viewModel.trendingTvs, type: .TVs)
                     
-                    HorizontalListView(listTitle: "Popular Movies", movies: viewModel.popularMovies, type: .popularMovies)
+                    HorizontalListView(listTitle: "Popular Movies", items: viewModel.popularMovies, type: .movies)
                     
-                    HorizontalListView(listTitle: "Upcoming Movies", movies: viewModel.upcomingMovies, type: .upcomingMovies)
+                    HorizontalListView(listTitle: "Upcoming Movies", items: viewModel.upcomingMovies, type: .movies)
                     
-                    HorizontalListView(listTitle: "Top Rated Movies", movies: viewModel.topRatedMovies, type: .topRatedMovies)
+                    HorizontalListView(listTitle: "Top Rated Movies", items: viewModel.topRatedMovies, type: .movies)
                     
-                    HorizontalListView(listTitle: "Top Rated TVs", movies: nil, Tvs: viewModel.topRatedTvs, type: .topRatedTVs)
+                    HorizontalListView(listTitle: "Top Rated TVs", items: viewModel.topRatedTvs, type: .TVs)
                     
                 }
             }
@@ -118,8 +99,8 @@ struct HomeView: View {
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
                     if !viewModel.trendingMovies.isEmpty {
-                        selectedMovie = viewModel.trendingMovies[0]
-                        if let url = selectedMovie.posterURL {
+                        selectedShow = viewModel.trendingMovies[0]
+                        if let url = selectedShow.posterURL {
                             imageManager.load(url: url)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
                                 if let image = imageManager.image {
@@ -137,13 +118,13 @@ struct HomeView: View {
                 guard isActive else { return }
                 if mainPosterIndex != viewModel.trendingMovies.count - 1 {
                     mainPosterIndex += 1
-                    selectedMovie = viewModel.trendingMovies[mainPosterIndex]
+                    selectedShow = viewModel.trendingMovies[mainPosterIndex]
                 } else {
                     mainPosterIndex = 0
-                    selectedMovie = viewModel.trendingMovies[mainPosterIndex]
+                    selectedShow = viewModel.trendingMovies[mainPosterIndex]
                 }
                 fadeOut.toggle()
-                if let url = selectedMovie.posterURL {
+                if let url = selectedShow.posterURL {
                     imageManager.load(url: url)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         if let image = imageManager.image {
@@ -168,7 +149,7 @@ struct HomeView: View {
                 }
             }
             .sheet(isPresented: $showingDetailView, content: {
-                MovieTrailerView(movie: selectedMovie)
+                ShowTrailerView(show: selectedShow)
             })
         }
     }

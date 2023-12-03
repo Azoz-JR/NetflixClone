@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var viewModel = NetflixViewModel()
+    @EnvironmentObject var viewModel: NetflixViewModel
     
     var body: some View {
         TabView {
@@ -33,25 +33,15 @@ struct ContentView: View {
                         Label("Downloads", systemImage: "arrow.down.to.line")
                     }
             }
-            .toolbar(.visible, for: .tabBar)
-            .toolbarBackground(Color.black.opacity(0.1), for: .tabBar)
             .environmentObject(viewModel)
-            .onAppear {
-                Task {
-                    await viewModel.fetchTrendingMovies()
-                    await viewModel.fetchTrendingTvs()
-                    await viewModel.fetchPopularMovies()
-                    await viewModel.fetchUpcomingMovies()
-                    await viewModel.fetchTopRatedMovies()
-                    await viewModel.fetchTopRatedTvs()
-                }
-            }
+            
         }
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        LaunchScreen()
+            .environmentObject(NetflixViewModel())
     }
 }

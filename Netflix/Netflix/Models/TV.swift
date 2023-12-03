@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct TrendingTvsResponse: Codable {
+struct TvsResponse: Codable {
     let results: [Tv]
 }
 
@@ -55,4 +55,10 @@ struct Tv: Identifiable, Codable {
         lhs.id == rhs.id
     }
     
+}
+
+extension Tv {
+    func toItemViewModel() -> ItemViewModel {
+        ItemViewModel(id: id, title: wrappedTitle, overview: wrappedOverview, posterURL: posterURL, originCountry: wrappedOriginCountry)
+    }
 }

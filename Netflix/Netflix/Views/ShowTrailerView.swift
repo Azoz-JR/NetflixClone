@@ -1,5 +1,5 @@
 //
-//  TrailerView.swift
+//  ShowView.swift
 //  Netflix
 //
 //  Created by Azoz Salah on 02/02/2023.
@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-struct MovieTrailerView: View {
+struct ShowTrailerView: View {
     
     @EnvironmentObject var viewModel: NetflixViewModel
     
-    let movie: Movie
+    let show: ItemViewModel
     
     var body: some View {
         ScrollView {
@@ -22,7 +22,7 @@ struct MovieTrailerView: View {
                 }
                 
                 
-                Text(movie.wrappedTitle)
+                Text(show.title)
                     .font(.title.bold())
                     .padding(.vertical)
                 
@@ -30,18 +30,16 @@ struct MovieTrailerView: View {
                     .font(.title2.bold())
                     .padding(.bottom, 5)
                 
-                Text(movie.wrappedOverview)
+                Text(show.overview)
                 
                 Button {
-                    if viewModel.downloadedMovies.contains(where: { $0 == movie}) {
-                        if let index = viewModel.downloadedMovies.firstIndex(where: { $0 == movie }) {
-                            viewModel.removeMovie(at: index)
-                        }
+                    if viewModel.isShowDownloaded(item: show) {
+                        viewModel.deleteShow(item: show)
                     } else {
-                        viewModel.downloadMovie(movie: movie)
+                        viewModel.downloadShow(item: show)
                     }
                 } label: {
-                    Text(viewModel.downloadedMovies.contains(where: { $0 == movie}) ? "Remove" : "Download")
+                    Text(viewModel.isShowDownloaded(item: show) ? "Remove" : "Download")
                         .font(.headline)
                         .padding()
                         .background(RoundedRectangle(cornerRadius: 5, style: .continuous).fill(.red))
@@ -52,18 +50,16 @@ struct MovieTrailerView: View {
         }
         .onAppear {
             Task {
-                await viewModel.fetchTrailer(searchText: movie.wrappedTitle + "trailer")
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                    
-                }
+                await viewModel.fetchTrailer(searchText: show.title + "trailer")
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { }
             }
         }
     }
 }
 
-struct MovieTrailerView_Previews: PreviewProvider {
+struct ShowTrailerView_Previews: PreviewProvider {
     static var previews: some View {
-        MovieTrailerView(movie: Movie(id: 1, original_language: "", original_title: "", overview: "", poster_path: "", release_date: "", title: "", vote_average: 1, vote_count: 1))
+        ShowTrailerView(show: ItemViewModel.example)
             .environmentObject(NetflixViewModel())
     }
 }

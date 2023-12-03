@@ -9,10 +9,24 @@ import SwiftUI
 
 @main
 struct NetflixApp: App {
+    
+    @StateObject private var viewModel = NetflixViewModel()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            LaunchScreen()
                 .preferredColorScheme(.dark)
+                .onAppear {
+                    Task {
+                        await viewModel.fetchTrendingMovies()
+                        await viewModel.fetchTrendingTvs()
+                        await viewModel.fetchPopularMovies()
+                        await viewModel.fetchUpcomingMovies()
+                        await viewModel.fetchTopRatedMovies()
+                        await viewModel.fetchTopRatedTvs()
+                    }
+                }
+                .environmentObject(viewModel)
         }
     }
 }

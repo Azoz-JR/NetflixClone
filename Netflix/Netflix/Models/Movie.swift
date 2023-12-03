@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct TrendingMoviesResponse: Codable {
+struct MoviesResponse: Codable {
     let results: [Movie]
 }
 
@@ -48,4 +48,10 @@ struct Movie: Identifiable, Codable {
     
     static let example = Movie(id: 1, original_language: "", original_title: "", overview: "", poster_path: "", release_date: "", title: "", vote_average: 1, vote_count: 1)
     
+}
+
+extension Movie {
+    func toItemViewModel() -> ItemViewModel {
+        ItemViewModel(id: id, title: wrappedTitle, overview: wrappedOverview, posterURL: posterURL)
+    }
 }

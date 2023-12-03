@@ -9,103 +9,26 @@ import Foundation
 
 class NetflixViewModel: ObservableObject {
     
+    var service: ItemsService?
     let loader = APICaller()
     
-    @Published private(set) var trendingMovies: [Movie] = []
-    @Published private(set) var trendingTvs: [Tv] = []
-    @Published private(set) var upcomingMovies: [Movie] = []
-    @Published private(set) var popularMovies: [Movie] = []
-    @Published private(set) var topRatedMovies: [Movie] = []
-    @Published private(set) var topRatedTvs: [Tv] = []
-    @Published private(set) var searchedMovies: [Movie] = []
-    @Published private(set) var searchedTvs: [Tv] = []
+    @Published private(set) var trendingMovies: [ItemViewModel] = []
+    @Published private(set) var trendingTvs: [ItemViewModel] = []
+    @Published private(set) var upcomingMovies: [ItemViewModel] = []
+    @Published private(set) var popularMovies: [ItemViewModel] = []
+    @Published private(set) var topRatedMovies: [ItemViewModel] = []
+    @Published private(set) var topRatedTvs: [ItemViewModel] = []
+    @Published private(set) var searchedShows: [ItemViewModel] = []
     @Published private(set) var selectedShowVideoElement: VideoElement = VideoElement.example
-    @Published private(set) var downloadedMovies: [Movie]
-    @Published private(set) var downloadedTVs: [Tv]
+    @Published private(set) var downloadedMovies: [ItemViewModel] = []
+    @Published private(set) var downloadedTVs: [ItemViewModel] = []
     
     private let savedMoviesPath = getDocumentsDirectory().appending(path: "Movies")
     private let savedTVsPath = getDocumentsDirectory().appending(path: "TVs")
     
     init() {
-        do {
-            let moviesData = try Data(contentsOf: savedMoviesPath)
-            let tvsData = try Data(contentsOf: savedTVsPath)
-            
-            let decodedMovies = try JSONDecoder().decode([Movie].self, from: moviesData)
-            downloadedMovies = decodedMovies
-            let decodedTvs = try JSONDecoder().decode([Tv].self, from: tvsData)
-            downloadedTVs = decodedTvs
-            return
-        } catch {
-            print("Failed loading data \(error.localizedDescription)")
-        }
-        
-        downloadedMovies = []
-        downloadedTVs = []
-    }
-    
-    func fetchTrendingMovies() async  {
-        if let trendingMovies = await loader.getTrendingMovies() {
-            await MainActor.run {
-                self.trendingMovies = trendingMovies
-            }
-        }
-    }
-    
-    func fetchTrendingTvs() async {
-        if let trendingTvs = await loader.getTrendingTvs() {
-            await MainActor.run {
-                self.trendingTvs = trendingTvs
-            }
-        }
-    }
-    
-    func fetchUpcomingMovies() async {
-        if let upcomingMovies = await loader.getUpcomingMovies() {
-            await MainActor.run {
-                self.upcomingMovies = upcomingMovies
-            }
-        }
-    }
-    
-    func fetchPopularMovies() async {
-        if let popularMovies = await loader.getPopularMovies() {
-            await MainActor.run {
-                self.popularMovies = popularMovies
-            }
-        }
-    }
-    
-    func fetchTopRatedMovies() async {
-        if let topRatedMovies = await loader.getTopRatedMovies() {
-            await MainActor.run {
-                self.topRatedMovies = topRatedMovies
-            }
-        }
-    }
-    
-    func fetchTopRatedTvs() async {
-        if let topRatedTvs = await loader.getTopRatedTvs() {
-            await MainActor.run {
-                self.topRatedTvs = topRatedTvs
-            }
-        }
-    }
-    
-    func fetchSearchedMovies(searchText: String) async {
-        if let searchedMovies = await loader.searchMovies(searchText: searchText) {
-            await MainActor.run {
-                self.searchedMovies = searchedMovies
-            }
-        }
-    }
-    
-    func fetchSearchedTvs(searchText: String) async {
-        if let searchedTvs = await loader.searchTvs(searchText: searchText) {
-            await MainActor.run {
-                self.searchedTvs = searchedTvs
-            }
-        }
+        downloadedMovies = fetchSavedData(type: .movies)
+        downloadedTVs = fetchSavedData(type: .TVs)
     }
     
     func fetchTrailer(searchText: String) async {
@@ -116,37 +39,34 @@ class NetflixViewModel: ObservableObject {
         }
     }
     
-    func downloadMovie(movie: Movie) {
-        downloadedMovies.insert(movie, at: 0)
-        save()
+    func downloadShow(item: ItemViewModel) {
+        if item.type == .movies {
+            downloadMovie(movie: item)
+        } else {
+            downloadTv(tv: item)
+        }
     }
     
-    func downloadTv(tv: Tv) {
-        downloadedTVs.insert(tv, at: 0)
-        save()
+    func isShowDownloaded(item: ItemViewModel) -> Bool {
+        if item.type == .movies {
+            return downloadedMovies.contains { $0 == item }
+        } else {
+            return downloadedTVs.contains { $0 == item }
+        }
     }
     
-    func removeMovieFromList(at index: IndexSet) {
-        downloadedMovies.remove(atOffsets: index)
-        save()
+    func deleteShow(item: ItemViewModel) {
+        if item.type == .movies {
+            if let index = downloadedMovies.firstIndex(where: { $0 == item }) {
+                removeMovie(at: index)
+            }
+        } else {
+            if let index = downloadedTVs.firstIndex(where: { $0 == item }) {
+                removeTv(at: index)
+            }
+
+        }
     }
-    
-    func removeTvFromList(at index: IndexSet) {
-        downloadedTVs.remove(atOffsets: index)
-        save()
-    }
-    
-    func removeMovie(at index: Int) {
-        downloadedMovies.remove(at: index)
-        save()
-    }
-    
-    func removeTv(at index: Int) {
-        downloadedTVs.remove(at: index)
-        save()
-    }
-    
-    
     
     private func save() {
         do {
@@ -159,5 +79,185 @@ class NetflixViewModel: ObservableObject {
         } catch {
             print("Failed saving data \(error.localizedDescription)")
         }
+    }
+    
+    private func fetchSavedData(type: ShowType) -> [ItemViewModel] {
+        do {
+            let data = try Data(contentsOf: type == .movies ? savedMoviesPath : savedTVsPath)
+            
+            let decodedMovies = try JSONDecoder().decode([ItemViewModel].self, from: data)
+            return decodedMovies
+        } catch {
+            print("Failed loading data \(error.localizedDescription)")
+            return []
+        }
+    }
+    
+}
+
+// MARK: All Movies methods
+extension NetflixViewModel {
+    
+    func loadMovies(list: MoviesList, completion: @escaping ([ItemViewModel]) -> ()) async {
+        service = MoviesAPIItemsServiceAdapter(api: MoviesAPI.shared, list: list)
+        await service?.loadItems { result in
+            switch result {
+            case .success(let movies):
+                completion(movies)
+            case .failure(let error):
+                print("Error downloading movies: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func searchMovies(searchText: String, completion: @escaping ([ItemViewModel]) -> ()) async {
+        service = MoviesAPIItemsServiceAdapter(api: MoviesAPI.shared)
+        await service?.searchItems(searchText: searchText) { result in
+            switch result {
+            case .success(let movies):
+                completion(movies)
+            case .failure(let error):
+                print("Error downloading movies: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func fetchTrendingMovies() async {
+        await loadMovies(list: .trending) { items in
+            Task {
+                await MainActor.run { [weak self] in
+                    self?.trendingMovies = items
+                }
+            }
+        }
+    }
+    
+    func fetchUpcomingMovies() async {
+        await loadMovies(list: .upcoming) { items in
+            Task {
+                await MainActor.run { [weak self] in
+                    self?.upcomingMovies = items
+                }
+            }
+        }
+    }
+
+    func fetchPopularMovies() async {
+        await loadMovies(list: .popualr) { items in
+            Task {
+                await MainActor.run { [weak self] in
+                    self?.popularMovies = items
+                }
+            }
+        }
+    }
+    
+    func fetchTopRatedMovies() async {
+        await loadMovies(list: .topRated) { items in
+            Task {
+                await MainActor.run { [weak self] in
+                    self?.topRatedMovies = items
+                }
+            }
+        }
+    }
+    
+    func fetchSearchedMovies(searchText: String) async {
+        await searchMovies(searchText: searchText) { items in
+            Task {
+                await MainActor.run { [weak self] in
+                    self?.searchedShows = items
+                }
+            }
+        }
+    }
+    
+    private func downloadMovie(movie: ItemViewModel) {
+        downloadedMovies.insert(movie, at: 0)
+        save()
+    }
+    
+    func removeMovieFromList(at index: IndexSet) {
+        downloadedMovies.remove(atOffsets: index)
+        save()
+    }
+    
+    private func removeMovie(at index: Int) {
+        downloadedMovies.remove(at: index)
+        save()
+    }
+}
+
+// MARK: All Tvs methods
+extension NetflixViewModel {
+    func loadTvs(list: TVsList, completion: @escaping ([ItemViewModel]) -> ()) async {
+        service = TVsAPIItemsServiceAdapter(api: TVsAPI.shared, list: list)
+        
+        await service?.loadItems { result in
+            switch result {
+            case .success(let tvs):
+                completion(tvs)
+            case .failure(let error):
+                print("Error downloading movies: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func searchTvs(searchText: String, completion: @escaping ([ItemViewModel]) -> ()) async {
+        service = TVsAPIItemsServiceAdapter(api: TVsAPI.shared)
+        
+        await service?.searchItems(searchText: searchText) { result in
+            switch result {
+            case .success(let tvs):
+                completion(tvs)
+            case .failure(let error):
+                print("Error downloading movies: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func fetchTrendingTvs() async {
+        await loadTvs(list: .trending) { items in
+            Task {
+                await MainActor.run { [weak self] in
+                    self?.trendingTvs = items
+                }
+            }
+        }
+    }
+    
+    func fetchTopRatedTvs() async {
+        await loadTvs(list: .topRated) { items in
+            Task {
+                await MainActor.run { [weak self] in
+                    self?.topRatedTvs = items
+                }
+            }
+        }
+    }
+    
+    func fetchSearchedTvs(searchText: String) async {
+        await searchTvs(searchText: searchText) { items in
+            Task {
+                await MainActor.run { [weak self] in
+                    self?.searchedShows = items
+                }
+            }
+        }
+    }
+    
+    private func downloadTv(tv: ItemViewModel) {
+        downloadedTVs.insert(tv, at: 0)
+        save()
+    }
+    
+    func removeTvFromList(at index: IndexSet) {
+        downloadedTVs.remove(atOffsets: index)
+        save()
+    }
+    
+    private func removeTv(at index: Int) {
+        downloadedTVs.remove(at: index)
+        save()
     }
 }

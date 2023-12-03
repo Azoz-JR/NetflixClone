@@ -15,9 +15,6 @@ struct SearchView: View {
     
     let types: [ShowType] = [.movies, .TVs]
     
-    let columns = [
-        GridItem(.adaptive(minimum: 120))
-    ]
     var gridLayout: Bool {
         if searchText.isEmpty {
             return false
@@ -30,78 +27,10 @@ struct SearchView: View {
         NavigationView {
             GeometryReader { geo in
                 ScrollView {
-                    if gridLayout {
-                        LazyVGrid(columns: columns, alignment: .leading, spacing: 5) {
-                            if type == .movies {
-                                ForEach(viewModel.searchedMovies) { movie in
-                                    NavigationLink {
-                                        MovieTrailerView(movie: movie)
-                                    } label: {
-                                        if let url = movie.posterURL {
-                                            WebImage(url: url)
-                                                .resizable()
-                                                .frame(width: 120, height: 200)
-                                        }
-                                    }
-                                }
-                            } else {
-                                ForEach(viewModel.searchedTvs) { tv in
-                                    NavigationLink {
-                                        TvTrailerView(tv: tv)
-                                    } label: {
-                                        if let url = tv.posterURL {
-                                            WebImage(url: url)
-                                                .resizable()
-                                                .frame(width: 120, height: 200)
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                    if gridLayout == true {
+                        GridView(shows: viewModel.searchedShows)
                     } else {
-                        VStack(alignment: .leading, spacing: 0) {
-                            if type == .movies {
-                                ForEach(viewModel.trendingMovies) { movie in
-                                    NavigationLink {
-                                        MovieTrailerView(movie: movie)
-                                    } label: {
-                                        if let url = movie.posterURL {
-                                            HStack {
-                                                WebImage(url: url)
-                                                    .resizable()
-                                                    .frame(width: 100, height: 150)
-                                                    .padding(.horizontal)
-                                                
-                                                Text(movie.wrappedTitle)
-                                                    .font(.title3.bold())
-                                            }
-                                            .padding(.horizontal, 5)
-                                            .frame(maxWidth: .infinity, alignment: .leading)
-                                        }
-                                    }
-                                }
-                            } else {
-                                ForEach(viewModel.trendingTvs) { tv in
-                                    NavigationLink {
-                                        TvTrailerView(tv: tv)
-                                    } label: {
-                                        if let url = tv.posterURL {
-                                            HStack {
-                                                WebImage(url: url)
-                                                    .resizable()
-                                                    .frame(width: 100, height: 150)
-                                                    .padding(.horizontal)
-                                                
-                                                Text(tv.wrappedTitle)
-                                                    .font(.title3.bold())
-                                            }
-                                            .padding(.horizontal, 5)
-                                            .frame(maxWidth: .infinity, alignment: .leading)
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        StackView(shows: type == .movies ? viewModel.trendingMovies : viewModel.trendingTvs)
                     }
                 }
             }

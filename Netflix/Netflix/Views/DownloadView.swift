@@ -19,46 +19,24 @@ struct DownloadView: View {
     var body: some View {
         NavigationView {
             List {
-                if type == .movies {
-                    ForEach(viewModel.downloadedMovies) { movie in
-                        NavigationLink {
-                            MovieTrailerView(movie: movie)
-                        } label: {
-                            if let url = movie.posterURL {
-                                HStack {
-                                    WebImage(url: url)
-                                        .resizable()
-                                        .frame(width: 100, height: 150)
-                                    
-                                    Text(movie.wrappedTitle)
-                                        .font(.title3.bold())
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
+                ForEach(type == .movies ? viewModel.downloadedMovies : viewModel.downloadedTVs) { show in
+                    NavigationLink {
+                        ShowTrailerView(show: show)
+                    } label: {
+                        if let url = show.posterURL {
+                            HStack {
+                                WebImage(url: url)
+                                    .resizable()
+                                    .frame(width: 100, height: 150)
+                                
+                                Text(show.title)
+                                    .font(.title3.bold())
                             }
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
-                    .onDelete(perform: viewModel.removeMovieFromList)
-                } else {
-                    ForEach(viewModel.downloadedTVs) { tv in
-                        NavigationLink {
-                            TvTrailerView(tv: tv)
-                        } label: {
-                            if let url = tv.posterURL {
-                                HStack {
-                                    WebImage(url: url)
-                                        .resizable()
-                                        .frame(width: 100, height: 150)
-                                        .padding(.horizontal)
-                                    
-                                    Text(tv.wrappedTitle)
-                                        .font(.title3.bold())
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            }
-                        }
-                    }
-                    .onDelete(perform: viewModel.removeTvFromList)
                 }
+                .onDelete(perform: type == .movies ? viewModel.removeMovieFromList : viewModel.removeTvFromList)
             }
             .listStyle(.inset)
             .navigationTitle("Downloads")
