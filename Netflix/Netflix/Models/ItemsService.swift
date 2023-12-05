@@ -9,8 +9,6 @@ import Foundation
 
 protocol ItemsService {
     func loadItems(completion: @escaping (Result<[ItemViewModel], Error>) -> ()) async
-    
-    func searchItems(searchText: String, completion: @escaping (Result<[ItemViewModel], Error>) -> ()) async
 }
 
 

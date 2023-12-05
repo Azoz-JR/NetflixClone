@@ -11,7 +11,7 @@ class MoviesAPI {
     static var shared = MoviesAPI()
     
     func loadMovies(list: MoviesList, completion: @escaping (Result<[Movie], Error>) -> ()) async {
-        guard let url = URL(string: list.url) else { return }
+        guard let url = URL(string: list.url) else { return completion(.failure(URLError(.badURL))) }
         
         do {
             let (data, response) = try await URLSession.shared.data(from: url)

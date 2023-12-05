@@ -16,7 +16,7 @@ struct ShowTrailerView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading) {
-                if let url = URL(string: "https://www.youtube.com/embed/\(viewModel.selectedShowVideoElement.id.videoId)") {
+                if let url = URL(string: Constants.youtubeVideoURL + viewModel.selectedShowVideoElement.title) {
                     WebView(url: url)
                         .frame(maxWidth: .infinity, idealHeight: 300)
                 }

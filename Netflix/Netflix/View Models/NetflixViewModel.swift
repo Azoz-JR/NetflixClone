@@ -8,9 +8,7 @@
 import Foundation
 
 class NetflixViewModel: ObservableObject {
-    
     var service: ItemsService?
-    let loader = APICaller()
     
     @Published private(set) var trendingMovies: [ItemViewModel] = []
     @Published private(set) var trendingTvs: [ItemViewModel] = []
@@ -19,7 +17,7 @@ class NetflixViewModel: ObservableObject {
     @Published private(set) var topRatedMovies: [ItemViewModel] = []
     @Published private(set) var topRatedTvs: [ItemViewModel] = []
     @Published private(set) var searchedShows: [ItemViewModel] = []
-    @Published private(set) var selectedShowVideoElement: VideoElement = VideoElement.example
+    @Published private(set) var selectedShowVideoElement: ItemViewModel = .example
     @Published private(set) var downloadedMovies: [ItemViewModel] = []
     @Published private(set) var downloadedTVs: [ItemViewModel] = []
     
@@ -29,14 +27,6 @@ class NetflixViewModel: ObservableObject {
     init() {
         downloadedMovies = fetchSavedData(type: .movies)
         downloadedTVs = fetchSavedData(type: .TVs)
-    }
-    
-    func fetchTrailer(searchText: String) async {
-        if let videoElement = await loader.getTrailer(searchText: searchText) {
-            await MainActor.run {
-                self.selectedShowVideoElement = videoElement
-            }
-        }
     }
     
     func downloadShow(item: ItemViewModel) {
@@ -95,10 +85,11 @@ class NetflixViewModel: ObservableObject {
     
 }
 
+
 // MARK: All Movies methods
 extension NetflixViewModel {
     
-    func loadMovies(list: MoviesList, completion: @escaping ([ItemViewModel]) -> ()) async {
+    private func loadMovies(list: MoviesList, completion: @escaping ([ItemViewModel]) -> ()) async {
         service = MoviesAPIItemsServiceAdapter(api: MoviesAPI.shared, list: list)
         await service?.loadItems { result in
             switch result {
@@ -110,9 +101,9 @@ extension NetflixViewModel {
         }
     }
     
-    func searchMovies(searchText: String, completion: @escaping ([ItemViewModel]) -> ()) async {
-        service = MoviesAPIItemsServiceAdapter(api: MoviesAPI.shared)
-        await service?.searchItems(searchText: searchText) { result in
+    private func searchMovies(searchText: String, completion: @escaping ([ItemViewModel]) -> ()) async {
+        service = MoviesAPIItemsServiceAdapter(api: MoviesAPI.shared, searchText: searchText)
+        await service?.loadItems { result in
             switch result {
             case .success(let movies):
                 completion(movies)
@@ -190,7 +181,7 @@ extension NetflixViewModel {
 
 // MARK: All Tvs methods
 extension NetflixViewModel {
-    func loadTvs(list: TVsList, completion: @escaping ([ItemViewModel]) -> ()) async {
+    private func loadTvs(list: TVsList, completion: @escaping ([ItemViewModel]) -> ()) async {
         service = TVsAPIItemsServiceAdapter(api: TVsAPI.shared, list: list)
         
         await service?.loadItems { result in
@@ -203,10 +194,10 @@ extension NetflixViewModel {
         }
     }
     
-    func searchTvs(searchText: String, completion: @escaping ([ItemViewModel]) -> ()) async {
-        service = TVsAPIItemsServiceAdapter(api: TVsAPI.shared)
+    private func searchTvs(searchText: String, completion: @escaping ([ItemViewModel]) -> ()) async {
+        service = TVsAPIItemsServiceAdapter(api: TVsAPI.shared, searchText: searchText)
         
-        await service?.searchItems(searchText: searchText) { result in
+        await service?.loadItems { result in
             switch result {
             case .success(let tvs):
                 completion(tvs)
@@ -259,5 +250,28 @@ extension NetflixViewModel {
     private func removeTv(at index: Int) {
         downloadedTVs.remove(at: index)
         save()
+    }
+}
+
+
+// MARK: Trailer
+extension NetflixViewModel {
+    func fetchTrailer(searchText: String) async {
+        service = YoutubeAPIItemsServiceAdapter(api: YoutubeAPI.shared, searchText: searchText)
+        
+        await service?.loadItems { result in
+            switch result {
+            case .success(let trailers):
+                if let trailer = trailers.first {
+                    Task {
+                        await MainActor.run {
+                            self.selectedShowVideoElement = trailer
+                        }
+                    }
+                }
+            case .failure(let error):
+                print("Error Searching for trailers: \(error.localizedDescription)")
+            }
+        }
     }
 }

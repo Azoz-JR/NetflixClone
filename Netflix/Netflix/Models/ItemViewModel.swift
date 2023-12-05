@@ -36,6 +36,16 @@ struct ItemViewModel: Identifiable, Equatable, Codable {
         self.originCountry = originCountry
     }
     
+    //Video init
+    init(title: String) {
+        self.id = 0
+        self.title = title
+        self.type = .movies
+        self.overview = ""
+        self.posterURL = nil
+        self.originCountry = ""
+    }
+    
     static func ==(lhs: ItemViewModel, rhs: ItemViewModel) -> Bool {
         lhs.id == rhs.id
     }

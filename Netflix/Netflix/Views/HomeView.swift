@@ -49,9 +49,10 @@ struct HomeView: View {
                                     Text("Play")
                                         .font(.title3)
                                         .frame(width: 140, height: 40)
+                                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                                         .background(Rectangle().fill(.black.opacity(0.6)))
                                         .overlay(
-                                            Rectangle().stroke(.white, lineWidth: 2)
+                                            RoundedRectangle(cornerRadius: 10, style: .continuous).stroke(.white, lineWidth: 1)
                                         )
                                         .offset(y: -25)
                                 }
@@ -66,9 +67,10 @@ struct HomeView: View {
                                     Text(viewModel.isShowDownloaded(item: selectedShow) ? "Remove" : "Download")
                                         .font(.title3)
                                         .frame(width: 140, height: 40)
+                                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                                         .background(Rectangle().fill(.black.opacity(0.6)))
                                         .overlay(
-                                            Rectangle().stroke(.white, lineWidth: 2)
+                                            RoundedRectangle(cornerRadius: 10, style: .continuous).stroke(.white, lineWidth: 1)
                                         )
                                         .offset(y: -25)
                                 }
@@ -148,9 +150,9 @@ struct HomeView: View {
                     isActive = true
                 }
             }
-            .sheet(isPresented: $showingDetailView, content: {
+            .sheet(isPresented: $showingDetailView) {
                 ShowTrailerView(show: selectedShow)
-            })
+            }
         }
     }
 }

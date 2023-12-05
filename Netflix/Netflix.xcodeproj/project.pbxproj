@@ -17,7 +17,6 @@
 		972E62F5298A88090053032B /* DownloadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 972E62F4298A88090053032B /* DownloadView.swift */; };
 		972E62F7298C0C410053032B /* HorizontalListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 972E62F6298C0C410053032B /* HorizontalListView.swift */; };
 		972E62F9298C0EB00053032B /* ShowTrailerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 972E62F8298C0EB00053032B /* ShowTrailerView.swift */; };
-		972E62FB298C150C0053032B /* APICaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 972E62FA298C150C0053032B /* APICaller.swift */; };
 		972E62FD298C1D770053032B /* Movie.swift in Sources */ = {isa = PBXBuildFile; fileRef = 972E62FC298C1D770053032B /* Movie.swift */; };
 		972E62FF298C2E790053032B /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 972E62FE298C2E790053032B /* Extensions.swift */; };
 		972E6301298C2FD60053032B /* TV.swift in Sources */ = {isa = PBXBuildFile; fileRef = 972E6300298C2FD60053032B /* TV.swift */; };
@@ -39,6 +38,8 @@
 		974CB1CD2B1D064E00CAB84D /* GridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 974CB1CC2B1D064E00CAB84D /* GridView.swift */; };
 		974CB1CF2B1D06D900CAB84D /* StackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 974CB1CE2B1D06D900CAB84D /* StackView.swift */; };
 		974CB1D32B1D102300CAB84D /* ShowMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 974CB1D22B1D102300CAB84D /* ShowMenu.swift */; };
+		974CB1D92B1E6A6E00CAB84D /* YoutubeAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 974CB1D82B1E6A6E00CAB84D /* YoutubeAPI.swift */; };
+		974CB1DB2B1EC10600CAB84D /* YoutubeAPIItemsServiceAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 974CB1DA2B1EC10600CAB84D /* YoutubeAPIItemsServiceAdapter.swift */; };
 		97BA61002999083400440AB0 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97BA60FF2999083400440AB0 /* Constants.swift */; };
 		97BA6102299909ED00440AB0 /* NetflixViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97BA6101299909ED00440AB0 /* NetflixViewModel.swift */; };
 /* End PBXBuildFile section */
@@ -55,7 +56,6 @@
 		972E62F4298A88090053032B /* DownloadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadView.swift; sourceTree = "<group>"; };
 		972E62F6298C0C410053032B /* HorizontalListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalListView.swift; sourceTree = "<group>"; };
 		972E62F8298C0EB00053032B /* ShowTrailerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowTrailerView.swift; sourceTree = "<group>"; };
-		972E62FA298C150C0053032B /* APICaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APICaller.swift; sourceTree = "<group>"; };
 		972E62FC298C1D770053032B /* Movie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Movie.swift; sourceTree = "<group>"; };
 		972E62FE298C2E790053032B /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		972E6300298C2FD60053032B /* TV.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TV.swift; sourceTree = "<group>"; };
@@ -74,6 +74,8 @@
 		974CB1CC2B1D064E00CAB84D /* GridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridView.swift; sourceTree = "<group>"; };
 		974CB1CE2B1D06D900CAB84D /* StackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackView.swift; sourceTree = "<group>"; };
 		974CB1D22B1D102300CAB84D /* ShowMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowMenu.swift; sourceTree = "<group>"; };
+		974CB1D82B1E6A6E00CAB84D /* YoutubeAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YoutubeAPI.swift; sourceTree = "<group>"; };
+		974CB1DA2B1EC10600CAB84D /* YoutubeAPIItemsServiceAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YoutubeAPIItemsServiceAdapter.swift; sourceTree = "<group>"; };
 		97BA60FF2999083400440AB0 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		97BA6101299909ED00440AB0 /* NetflixViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetflixViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -168,11 +170,12 @@
 		979D378B299A7E17004243F9 /* Load Manager */ = {
 			isa = PBXGroup;
 			children = (
-				972E62FA298C150C0053032B /* APICaller.swift */,
 				974CB1BE2B1BB28000CAB84D /* MoviesAPI.swift */,
 				974CB1C22B1BBA1600CAB84D /* MoviesAPIItemsServiceAdapter.swift */,
 				974CB1C02B1BB29C00CAB84D /* TVsAPI.swift */,
 				974CB1C42B1BBB7C00CAB84D /* TVsAPIItemsServiceAdapter.swift */,
+				974CB1D82B1E6A6E00CAB84D /* YoutubeAPI.swift */,
+				974CB1DA2B1EC10600CAB84D /* YoutubeAPIItemsServiceAdapter.swift */,
 			);
 			path = "Load Manager";
 			sourceTree = "<group>";
@@ -291,8 +294,8 @@
 				972E6301298C2FD60053032B /* TV.swift in Sources */,
 				972E630F299097CE0053032B /* WebView.swift in Sources */,
 				974CB1CD2B1D064E00CAB84D /* GridView.swift in Sources */,
-				972E62FB298C150C0053032B /* APICaller.swift in Sources */,
 				974CB1CF2B1D06D900CAB84D /* StackView.swift in Sources */,
+				974CB1D92B1E6A6E00CAB84D /* YoutubeAPI.swift in Sources */,
 				974CB1BF2B1BB28000CAB84D /* MoviesAPI.swift in Sources */,
 				972E62E3298A868B0053032B /* ContentView.swift in Sources */,
 				972E62F1298A87BB0053032B /* ComingSoonView.swift in Sources */,
@@ -310,6 +313,7 @@
 				974CB1C72B1CCC1800CAB84D /* ItemsService.swift in Sources */,
 				97BA61002999083400440AB0 /* Constants.swift in Sources */,
 				97BA6102299909ED00440AB0 /* NetflixViewModel.swift in Sources */,
+				974CB1DB2B1EC10600CAB84D /* YoutubeAPIItemsServiceAdapter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

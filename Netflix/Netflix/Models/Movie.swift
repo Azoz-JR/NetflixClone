@@ -42,12 +42,6 @@ struct Movie: Identifiable, Codable {
         }
     }
     
-    static func ==(lhs: Movie, rhs: Movie) -> Bool {
-        lhs.id == rhs.id
-    }
-    
-    static let example = Movie(id: 1, original_language: "", original_title: "", overview: "", poster_path: "", release_date: "", title: "", vote_average: 1, vote_count: 1)
-    
 }
 
 extension Movie {

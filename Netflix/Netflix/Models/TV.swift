@@ -51,10 +51,6 @@ struct Tv: Identifiable, Codable {
         }
     }
     
-    static func ==(lhs: Tv, rhs: Tv) -> Bool {
-        lhs.id == rhs.id
-    }
-    
 }
 
 extension Tv {

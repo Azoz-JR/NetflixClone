@@ -20,12 +20,8 @@ struct Constants {
     static let trendingTVsURL = "\(baseURL)/3/trending/tv/day?api_key=\(APIKey)"
     static let topRatedTVsURL = "\(baseURL)/3/tv/top_rated?api_key=\(APIKey)&language=en-US&page=1"
     static let searchMoviesURL = "\(baseURL)/3/search/movie?api_key=\(APIKey)&query="
-    static let searchTVsURL = "\(Constants.baseURL)/3/search/tv?api_key=\(Constants.APIKey)&query="
-}
-
-
-enum TitleType {
-    case trendingMovies, trendingTVs, popularMovies, upcomingMovies, topRatedMovies, topRatedTVs
+    static let searchTVsURL = "\(baseURL)/3/search/tv?api_key=\(APIKey)&query="
+    static let youtubeVideoURL = "https://www.youtube.com/embed/"
 }
 
 enum ShowType: String, Codable {
